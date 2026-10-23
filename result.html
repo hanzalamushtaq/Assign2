@@ -1,0 +1,296 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quiz Result</title>
+    <style>
+      * {
+        padding: 0;
+        margin: 0;
+      }
+      body {
+        user-select: none;
+        box-sizing: border-box;
+      }
+      .header {
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background-color: teal;
+        height: 80px;
+      }
+      .header h3 {
+        user-select: none;
+        margin: 20px;
+        font-size: 35px;
+        color: aliceblue;
+      }
+      .header button {
+        margin: 20px;
+        padding: 10px 20px;
+        font-size: 20px;
+        font-weight: bold;
+        background-color: aliceblue;
+        color: teal;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+      .header button:hover {
+        transform: scale(1.05);
+      }
+      .container {
+        width: 90%;
+        margin: 30px auto;
+      }
+      .container h2 {
+        color: teal;
+        font-size: 30px;
+        margin-bottom: 10px;
+      }
+      .container h3 {
+        font-size: 24px;
+        margin-bottom: 20px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 25px;
+      }
+      table,
+      th,
+      td {
+        border: 1px solid black;
+      }
+      th,
+      td {
+        padding: 12px;
+        text-align: left;
+        font-size: 18px;
+      }
+      th {
+        background-color: teal;
+        color: aliceblue;
+      }
+      .btn-group {
+        display: flex;
+        gap: 15px;
+      }
+      .btn-group button {
+        font-size: 20px;
+        height: 50px;
+        padding: 0 25px;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        font-weight: bold;
+        color: aliceblue;
+        transition: all 0.2s ease;
+      }
+      #print-btn {
+        background-color: teal;
+      }
+      #back-btn {
+        background-color: red;
+      }
+      .btn-group button:hover {
+        transform: scale(1.05);
+      }
+
+      /* Red and Green status badges */
+      .badge-correct {
+        display: inline-block;
+        background-color: #28a745;
+        color: #ffffff;
+        font-weight: bold;
+        padding: 6px 12px;
+        border-radius: 8px;
+        font-size: 16px;
+      }
+      .badge-wrong {
+        display: inline-block;
+        background-color: #dc3545;
+        color: #ffffff;
+        font-weight: bold;
+        padding: 6px 12px;
+        border-radius: 8px;
+        font-size: 16px;
+      }
+      .badge-answer {
+        display: inline-block;
+        background-color: #e8f5e9;
+        color: #1b5e20;
+        border: 1px solid #a5d6a7;
+        font-weight: bold;
+        padding: 6px 12px;
+        border-radius: 8px;
+        font-size: 16px;
+      }
+      tr.row-correct {
+        background-color: #f0fdf4;
+      }
+      tr.row-wrong {
+        background-color: #fef2f2;
+      }
+
+      /* Offline Print to PDF */
+      @media print {
+        .header,
+        .btn-group {
+          display: none !important;
+        }
+        .container {
+          width: 100% !important;
+          margin: 0 !important;
+        }
+        th {
+          background-color: teal !important;
+          color: white !important;
+          -webkit-print-color-adjust: exact !important;
+          print-color-adjust: exact !important;
+        }
+        .badge-correct {
+          background-color: #28a745 !important;
+          color: #ffffff !important;
+          -webkit-print-color-adjust: exact !important;
+          print-color-adjust: exact !important;
+        }
+        .badge-wrong {
+          background-color: #dc3545 !important;
+          color: #ffffff !important;
+          -webkit-print-color-adjust: exact !important;
+          print-color-adjust: exact !important;
+        }
+        .badge-answer {
+          background-color: #e8f5e9 !important;
+          color: #1b5e20 !important;
+          -webkit-print-color-adjust: exact !important;
+          print-color-adjust: exact !important;
+        }
+        tr.row-correct {
+          background-color: #f0fdf4 !important;
+          -webkit-print-color-adjust: exact !important;
+          print-color-adjust: exact !important;
+        }
+        tr.row-wrong {
+          background-color: #fef2f2 !important;
+          -webkit-print-color-adjust: exact !important;
+          print-color-adjust: exact !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <h3>Quiz Result</h3>
+      <button id="header-print">Print / Save as PDF</button>
+    </div>
+
+    <div class="container">
+      <h2>Evaluation & Answer Key</h2>
+      <h3 id="score-text">Your Score: 0/5</h3>
+
+      <table>
+        <thead>
+          <tr>
+            <th style="width: 48%;">Question</th>
+            <th style="width: 26%;">Student Selection</th>
+            <th style="width: 26%;">Correct Answer</th>
+          </tr>
+        </thead>
+        <tbody id="result-body"></tbody>
+      </table>
+
+      <div class="btn-group">
+        <button id="print-btn">Print / Save as PDF</button>
+        <button id="back-btn">Back to Quiz</button>
+      </div>
+    </div>
+
+    <script>
+      function normalizeString(str) {
+        if (!str) return "";
+        return String(str)
+          .replace(/&lt;/g, "<")
+          .replace(/&gt;/g, ">")
+          .replace(/&amp;/g, "&")
+          .replace(/&quot;/g, '"')
+          .replace(/&#039;/g, "'")
+          .trim();
+      }
+
+      function escapeHtml(str) {
+        if (!str) return "";
+        return String(str)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#039;");
+      }
+
+      let answers = JSON.parse(localStorage.getItem("quiz_answers") || "[]");
+      let questions = JSON.parse(
+        localStorage.getItem("quiz_questions") || "[]"
+      );
+
+      let correct = 0;
+      let tbody = document.getElementById("result-body");
+
+      for (let j = 0; j < questions.length; j++) {
+        let studentChoice =
+          answers[j] !== undefined && answers[j] !== "" ? answers[j] : "Not Selected";
+        let correctChoice = questions[j].ans;
+
+        let isCorrect =
+          studentChoice !== "Not Selected" &&
+          normalizeString(studentChoice) === normalizeString(correctChoice);
+
+        if (isCorrect) {
+          correct++;
+        }
+
+        let studentBadge = isCorrect
+          ? `<span class="badge-correct">✔ ${escapeHtml(studentChoice)}</span>`
+          : `<span class="badge-wrong">✖ ${escapeHtml(studentChoice)}</span>`;
+
+        let correctBadge = `<span class="badge-answer">✔ ${escapeHtml(correctChoice)}</span>`;
+        let rowClass = isCorrect ? "row-correct" : "row-wrong";
+
+        let row =
+          `<tr class="${rowClass}">` +
+          `<td><strong>${j + 1}.</strong> ${escapeHtml(questions[j].q)}</td>` +
+          `<td>${studentBadge}</td>` +
+          `<td>${correctBadge}</td>` +
+          `</tr>`;
+        tbody.innerHTML += row;
+      }
+
+      document.getElementById("score-text").textContent =
+        "Your Score: " + correct + "/" + questions.length;
+
+      document
+        .getElementById("print-btn")
+        .addEventListener("click", function () {
+          window.print();
+        });
+
+      document
+        .getElementById("header-print")
+        .addEventListener("click", function () {
+          window.print();
+        });
+
+      document
+        .getElementById("back-btn")
+        .addEventListener("click", function () {
+          window.location.href = "index.html";
+        });
+    </script>
+  </body>
+</html>

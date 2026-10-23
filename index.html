@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quiz Application</title>
+    <style>
+      * {
+        padding: 0;
+        margin: 0;
+      }
+      body {
+        user-select: none;
+        box-sizing: border-box;
+      }
+      body.dark {
+        background-color: #222;
+        color: aliceblue;
+      }
+      body.dark .card {
+        background-color: #333;
+        color: aliceblue;
+        border: 1px solid aliceblue;
+      }
+      .header {
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background-color: teal;
+        height: 80px;
+      }
+      .header h3 {
+        user-select: none;
+        margin: 20px;
+        font-size: 40px;
+        color: aliceblue;
+      }
+      .header-buttons {
+        display: flex;
+        gap: 10px;
+        margin-right: 20px;
+      }
+      .header button {
+        padding: 10px 20px;
+        font-size: 20px;
+        font-weight: bold;
+        background-color: aliceblue;
+        color: teal;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+      .header button:hover {
+        transform: scale(1.05);
+      }
+      .time {
+        user-select: none;
+        margin: 10px 0 0 20px;
+      }
+      .question {
+        width: 90%;
+        margin: 10px auto 0 auto;
+        font-size: 25px;
+      }
+      .main {
+        width: 90%;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding: 20px;
+        align-items: center;
+      }
+      .card {
+        height: 50px;
+        margin: 10px;
+        border: 1px solid black;
+        width: 100%;
+        padding: 10px;
+        align-content: center;
+        border-radius: 15px;
+        font-size: 20px;
+        cursor: pointer;
+        user-select: none;
+        transition: all 0.1s ease;
+        background-color: white;
+      }
+      .card:hover {
+        transform: scale(1.02);
+      }
+      .card.correct,
+      body.dark .card.correct {
+        background-color: #28a745 !important;
+        color: #ffffff !important;
+        border: 2px solid #1e7e34 !important;
+        box-shadow: 0 4px 12px rgba(40, 167, 69, 0.35);
+      }
+      .card.wrong,
+      body.dark .card.wrong {
+        background-color: #dc3545 !important;
+        color: #ffffff !important;
+        border: 2px solid #bd2130 !important;
+        box-shadow: 0 4px 12px rgba(220, 53, 69, 0.35);
+      }
+      .feedback {
+        min-height: 28px;
+        font-size: 19px;
+        font-weight: bold;
+        text-align: center;
+        margin: 5px auto 10px auto;
+        width: 90%;
+        transition: all 0.2s ease;
+      }
+      .feedback.correct-text {
+        color: #28a745;
+      }
+      .feedback.wrong-text {
+        color: #dc3545;
+      }
+      .buttons {
+        display: flex;
+        margin: 0 auto;
+        width: 70%;
+        user-select: none;
+        justify-content: space-evenly;
+      }
+      .buttons #prev,
+      #next {
+        font-size: 20px;
+        height: 50px;
+        width: 40%;
+        border-radius: 10px;
+        outline: none;
+        border: none;
+        color: aliceblue;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+      #prev {
+        background-color: red;
+      }
+      #next {
+        background-color: green;
+      }
+      #prev:hover,
+      #next:hover {
+        transform: scale(1.1);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <h3 id="t">1/5</h3>
+      <div class="header-buttons">
+        <button id="mode">Dark Mode</button>
+        <button id="download">Download Result</button>
+      </div>
+    </div>
+    <div class="time">
+      <h2 id="time-text">Time: 05:00</h2>
+    </div>
+    <div class="question">
+      <h2 id="ques">I am the Question 1?</h2>
+      <div class="feedback" id="feedback"></div>
+    </div>
+    <div class="main">
+      <div class="card" id="card1"><p id="0">Option 1</p></div>
+      <div class="card" id="card2"><p id="1">Option 2</p></div>
+      <div class="card" id="card3"><p id="2">Option 3</p></div>
+      <div class="card" id="card4"><p id="3">Option 4</p></div>
+    </div>
+    <div class="buttons">
+      <button id="prev">Previous</button>
+      <button id="next">Next</button>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
